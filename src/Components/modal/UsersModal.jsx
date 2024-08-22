@@ -1,27 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
+import axios from 'axios';
 import Swal from 'sweetalert2';
 
-function Modal({ isOpen, onClose, onSave, initialData }) {
+function UsersModal({ isOpen, onClose, onSave, initialData }) {
     const [formData, setFormData] = useState({
-        product_name: '',
-        category: '',
-        price: '',
-        product_dealer: '',
+        user_id: "",
+        user_name: "",
+        user_email: "",
     });
 
     useEffect(() => {
         if (initialData) {
             setFormData(initialData);
         } else {
-            setFormData({
-                product_name: '',
-                category: '',
-                price: '',
-                product_dealer: '',
-            });
+            resetFormData();
         }
     }, [initialData]);
+
+    const resetFormData = () => {
+        setFormData({
+            user_id: "",
+            user_name: "",
+            user_email: "",
+        });
+    };
 
     const handleChange = (e) => {
         setFormData({
@@ -30,10 +33,19 @@ function Modal({ isOpen, onClose, onSave, initialData }) {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        Swal.fire('Data Edited', 'The Data has been Edited.', 'success');
-        onSave(formData);
+        try {
+            const POST_URL = "http://localhost:8000/users";
+            const response = await axios.post(POST_URL, formData);
+            console.log("User data saved:", response.data);
+            onSave(response.data);
+            resetFormData(); 
+            Swal.fire('User Added!', 'User has been added.', 'success');
+            onClose(); 
+        } catch (error) {
+            console.error("Error saving user data:", error);
+        }
     };
 
     if (!isOpen) {
@@ -44,61 +56,48 @@ function Modal({ isOpen, onClose, onSave, initialData }) {
         <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
             <div className="bg-white rounded-lg p-6 w-1/3">
                 <h2 className="text-xl font-semibold mb-4">
-                    {initialData ? 'Edit Product' : 'Add Product'}
+                    {initialData ? 'Edit User' : 'Add User'}
                 </h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">
-                            Product Name
-                        </label>
-                        <input
-                            type="text"
-                            name="product_name"
-                            value={formData.product_name}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                            required
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700">
-                            Category
-                        </label>
-                        <input
-                            type="text"
-                            name="category"
-                            value={formData.category}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                            required
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700">
-                            Price
+                            User ID
                         </label>
                         <input
                             type="number"
-                            name="price"
-                            value={formData.price}
+                            name="user_id"
+                            value={formData.user_id}
                             onChange={handleChange}
                             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                             required
                         />
                     </div>
-                    {/* <div className="mb-4">
+                    <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">
-                            Product Dealer
+                            User Name
                         </label>
                         <input
                             type="text"
-                            name="product_dealer"
-                            value={formData.product_dealer}
+                            name="user_name"
+                            value={formData.user_name}
                             onChange={handleChange}
                             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                             required
                         />
-                    </div> */}
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700">
+                            User Email
+                        </label>
+                        <input
+                            type="email"
+                            name="user_email"
+                            value={formData.user_email}
+                            onChange={handleChange}
+                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                            required
+                        />
+                    </div>
                     <div className="flex justify-end gap-4">
                         <button
                             type="button"
@@ -120,22 +119,19 @@ function Modal({ isOpen, onClose, onSave, initialData }) {
     );
 }
 
-// Define prop types
-Modal.propTypes = {
+UsersModal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
     initialData: PropTypes.shape({
-        product_name: PropTypes.string,
-        category: PropTypes.string,
-        price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        product_dealer: PropTypes.string,
+        user_id: PropTypes.string,
+        user_name: PropTypes.string,
+        user_email: PropTypes.string,
     }),
 };
 
-// Default props if not provided
-Modal.defaultProps = {
+UsersModal.defaultProps = {
     initialData: null,
 };
 
-export default Modal;
+export default UsersModal;

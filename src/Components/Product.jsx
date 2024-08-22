@@ -19,9 +19,8 @@ function Product() {
                     <p className='mb-2'><strong className='font-medium'>Product ID:</strong> {product.id}</p>
                     <p className='mb-2'><strong className='font-medium'>Product Name:</strong> {product.product_name}</p>
                     <p className='mb-2'><strong className='font-medium'>Dealer:</strong> {product.Product_dealer}</p>
-                    
-                    <p className='mb-2'><strong className='font-medium'>Product Availability:</strong> {product.Location_availability}</p>
-                    <p className='mb-2 text-4xl'><strong className='font-medium'>Price:</strong> ₹ {product.product_price}</p>
+                    {/* <p className='mb-2'><strong className='font-medium'>Product Availability:</strong> {product.Location_availability} </p> */}
+                    <p className='mb-2 text-4xl'><strong className='font-medium'>Price:</strong> ₹ {product.price}</p>
                 </div>
             </div>
         </div>

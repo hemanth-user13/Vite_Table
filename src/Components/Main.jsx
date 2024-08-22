@@ -5,6 +5,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import Modal from './modal/modal';
 import { TrashIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/solid';
+import { Link } from 'react-router-dom'
 
 function SearchBar() {
     const { searchTerm, setSearchTerm } = useProductProvider();
@@ -21,7 +22,7 @@ function SearchBar() {
         </div>
     );
 }
-
+const DATA_URL = "http://localhost:8000/products";
 function Main() {
     const { data, setData, searchTerm } = useProductProvider();
     const [selectedItems, setSelectedItems] = useState(new Set());
@@ -29,7 +30,7 @@ function Main() {
     const [modalData, setModalData] = useState(null);
 
     const fetchData = async () => {
-        const DATA_URL = "http://localhost:8000/products";
+        // const DATA_URL = "http://localhost:8000/products";
         try {
             const response = await axios.get(DATA_URL);
             setData(response.data);
@@ -88,8 +89,17 @@ function Main() {
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                setData(data.filter(item => item.id !== id));
-                Swal.fire('Deleted!', 'Product has been deleted.', 'success');
+                // setData(data.filter(item => item.id !== id));
+                // Swal.fire('Deleted!', 'Product has been deleted.', 'success');
+                axios.delete(`${DATA_URL}/${id}`)
+                    .then(() => {
+                        setData(data.filter(item => item.id !== id));
+                        Swal.fire('Deleted!', 'Product has been deleted.', 'success');
+                    })
+                    .catch((error) => {
+                        Swal.fire('Error!', 'There was an error deleting the user.', 'error');
+                        console.error('There was an error deleting the user:', error);
+                    })
             }
         });
     };
@@ -125,11 +135,12 @@ function Main() {
         setIsModalOpen(false);
     };
 
+
     return (
         <>
             <NavBar />
             <div className="p-4 sm:ml-64">
-            <h1 className='text-4xl text-center my-3 pb-8 ml-10 font-serif'>Product Management</h1>
+                <h1 className='text-4xl text-center my-3 pb-8 ml-10 font-serif'>Product Management</h1>
                 <div className="mr-auto">
                     <div className="flex justify-between items-center mb-4">
                         <SearchBar />
@@ -154,59 +165,63 @@ function Main() {
                     </div>
 
                     <div className="overflow-x-auto relative">
-                        {filteredData.length>0?(
+                        {filteredData.length > 0 ? (
                             <table className="w-5/6 mr-32 text-sm text-left text-gray-500">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-                                <tr>
-                                    <th scope="col" className="p-4">
-                                        <input
-                                            type="checkbox"
-                                            onChange={handleSelectAll}
-                                            checked={selectedItems.size === filteredData.length}
-                                        />
-                                    </th>
-                                    <th scope="col" className="py-3 px-6">Product ID</th>
-                                    <th scope="col" className="py-3 px-6">Product Name</th>
-                                    <th scope="col" className="py-3 px-6">Category</th>
-                                    <th scope="col" className="py-3 px-6">Price</th>
-                                    <th scope="col" className="py-3 px-6">Product Dealer</th>
-                                    <th scope="col" className="py-3 px-6">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredData.map((product) => (
-                                    <tr key={product.id} className="bg-white border-b">
-                                        <td className="p-4">
+                                <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                                    <tr>
+                                        <th scope="col" className="p-4">
                                             <input
                                                 type="checkbox"
-                                                checked={selectedItems.has(product.id)}
-                                                onChange={() => handleRowCheckboxChange(product.id)}
+                                                onChange={handleSelectAll}
+                                                checked={selectedItems.size === filteredData.length}
                                             />
-                                        </td>
-                                        <td className="py-4 px-6">{product.id}</td>
-                                        <td className="py-4 px-6">{product.product_name}</td>
-                                        <td className="py-4 px-6">{product.category}</td>
-                                        <td className="py-4 px-6">{product.price}</td>
-                                        <td className="py-4 px-6">{product.Product_dealer}</td>
-                                        <td className="py-4 px-6">
-                                            <button
-                                                className="text-blue-600 hover:text-blue-900 mr-2"
-                                                onClick={() => handleEditClick(product)}
-                                            >
-                                                <PencilIcon className="w-5 h-5" />
-                                            </button>
-                                            <button
-                                                className="text-red-600 hover:text-red-900"
-                                                onClick={() => deleteProduct(product.id)}
-                                            >
-                                                <TrashIcon className="w-5 h-5" />
-                                            </button>
-                                        </td>
+                                        </th>
+                                        <th scope="col" className="py-3 px-6">Product ID</th>
+                                        <th scope="col" className="py-3 px-6">Product Name</th>
+                                        <th scope="col" className="py-3 px-6">Category</th>
+                                        <th scope="col" className="py-3 px-6">Price</th>
+                                        <th scope="col" className="py-3 px-6">Product Dealer</th>
+                                        <th scope="col" className="py-3 px-6">Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        ):(
+                                </thead>
+                                <tbody>
+                                    {filteredData.map((product) => (
+                                        <tr key={product.id} className="bg-white border-b">
+                                            <td className="p-4">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedItems.has(product.id)}
+                                                    onChange={() => handleRowCheckboxChange(product.id)}
+                                                />
+                                            </td>
+                                            <td className="py-4 px-6">{product.id}</td>
+                                            <td className="py-4 px-6">
+                                                <Link to={`/product/${product.id}`} state={{ product: product }}>
+                                                    {product.product_name}
+                                                </Link>
+                                            </td>
+                                            <td className="py-4 px-6">{product.category}</td>
+                                            <td className="py-4 px-6">{product.price}</td>
+                                            <td className="py-4 px-6">{product.Product_dealer}</td>
+                                            <td className="py-4 px-6">
+                                                <button
+                                                    className="text-blue-600 hover:text-blue-900 mr-2"
+                                                    onClick={() => handleEditClick(product)}
+                                                >
+                                                    <PencilIcon className="w-5 h-5" />
+                                                </button>
+                                                <button
+                                                    className="text-red-600 hover:text-red-900"
+                                                    onClick={() => deleteProduct(product.id)}
+                                                >
+                                                    <TrashIcon className="w-5 h-5" />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        ) : (
                             <p className='text-2xl font-semibold text-red-600 my-56'>No Data Found</p>
                         )}
                     </div>
