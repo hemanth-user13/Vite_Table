@@ -6,9 +6,11 @@ const ProductContext = createContext(null);
 export const ProductProvider = ({ children }) => {
     const [data, setData] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [userData,setUserData]=useState([]);
+
 
     return (
-        <ProductContext.Provider value={{ data, setData, searchTerm, setSearchTerm }}>
+        <ProductContext.Provider value={{ data, setData, searchTerm, setSearchTerm,userData,setUserData }}>
             {children}
         </ProductContext.Provider>
     );

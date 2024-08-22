@@ -4,7 +4,10 @@ import Main from './Components/Main';
 import MainPage from './Components/Mainpage';
 import ProductPage from './Components/Product'
 import { ProductProvider } from './Components/ProductSlice';
-import PageNotFound from './Components/Error/Error'
+import UserPage from './Components/Users';
+import AddProducts from './Components/AddProducts';
+import PageNotFound from './Components/Error/Error';
+
 
 function App() {
 
@@ -15,7 +18,9 @@ function App() {
           <Routes>
             <Route path='/' element={<MainPage />} />
             <Route path='/ProductList' element={<Main />} />
-            <Route path='/product/:id' element={<ProductPage/>}/>
+            <Route path='/product/:id' element={<ProductPage />} />
+            <Route path='/users' element={<UserPage />} />
+            <Route path='/addproducts' element={<AddProducts/>}/>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </ProductProvider>
