@@ -1,13 +1,6 @@
 {
   "products": [
     {
-      "id": "1",
-      "product_name": "Apple iPhone 13",
-      "category": "Electronics",
-      "price": "999",
-      "Product_dealer": "Amazon"
-    },
-    {
       "id": "4",
       "product_name": "Apple MacBook Pro",
       "category": "Computers",
@@ -205,12 +198,6 @@
     }
   ],
   "users": [
-    {
-      "id": "832d",
-      "user_id": "2323",
-      "user_name": "test3",
-      "user_email": "test3@gmail.com"
-    },
     {
       "id": "d3cc",
       "user_id": "1",

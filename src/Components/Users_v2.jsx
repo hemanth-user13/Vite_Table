@@ -5,7 +5,6 @@ import axios from 'axios';
 import { TrashIcon, PlusIcon } from '@heroicons/react/24/solid';
 import UserModal from './modal/UsersModal';
 import Swal from 'sweetalert2';
-import { DataGrid } from '@mui/x-data-grid';
 
 function Users() {
     const { userData, setUserData } = useProductProvider();
@@ -66,28 +65,10 @@ function Users() {
         })
     }
 
-    const columns = [
-        { field: 'user_id', headerName: 'User ID', width: 150 },
-        { field: 'user_name', headerName: 'User Name', width: 200 },
-        { field: 'user_email', headerName: 'User Email', width: 250 },
-        {
-            field: 'actions',
-            headerName: 'Actions',
-            width: 150,
-            renderCell: (params) => (
-                <button
-                    className="text-red-600 hover:text-red-900"
-                    onClick={() => deleteUser(params.row.id)}
-                >
-                    <TrashIcon className="w-5 h-5" />
-                </button>
-            ),
-        },
-    ];
-
     return (
         <div>
             <Navbar />
+
             <h2 className='text-3xl font-serif ml-48 my-3'>User List</h2>
             <div className='flex justify-end items-end my-5'>
                 <button
@@ -102,14 +83,33 @@ function Users() {
                 </button>
             </div>
             {userData.length > 0 ? (
-                <div style={{ height: 400, width: '80%', marginLeft: 'auto', marginRight: 'auto' }}>
-                    <DataGrid
-                        rows={userData}
-                        columns={columns}
-                        disableSelectionOnClick
-                        hideFooterPagination
-                    />
-                </div>
+                <table className="min-w-full bg-white border ml-32">
+                    <thead>
+                        <tr className="bg-gray-200">
+                            <th className="px-9 py-3 text-center text-base font-medium text-gray-500 uppercase tracking-wider">User ID</th>
+                            <th className="px-8 py-3 text-center text-base font-medium text-gray-500 uppercase tracking-wider">User Name</th>
+                            <th className="px-8 py-3 text-center text-base font-medium text-gray-500 uppercase tracking-wider">User Email</th>
+                            <th className="px-8 py-3 text-center text-base font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {userData.map((user, index) => (
+                            <tr key={index} className="bg-white border-b">
+                                <td className="px-6 py-4 whitespace-nowrap">{user.user_id}</td>
+                                <td className="py-4 whitespace-nowrap">{user.user_name}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">{user.user_email}</td>
+                                <td className='px-6 py-4'>
+                                    <button
+                                        className="text-red-600 hover:text-red-900"
+                                        onClick={() => deleteUser(user.id)}
+                                    >
+                                        <TrashIcon className="w-5 h-5" />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             ) : (
                 <p>No Data Found</p>
             )}
