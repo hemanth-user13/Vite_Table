@@ -5,7 +5,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import Modal from './modal/modal';
 import { TrashIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/solid';
-import { Link } from 'react-router-dom'
+import { DataGrid } from '@mui/x-data-grid';
 
 function SearchBar() {
     const { searchTerm, setSearchTerm } = useProductProvider();
@@ -14,7 +14,7 @@ function SearchBar() {
         <div className="max-w-md ml-36">
             <input
                 type="search"
-                className=" absolute ml-96 top-32 w-1/4 left-4 p-4 mr-48   text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                className="absolute ml-96 top-32 w-1/4 left-4 p-4 mr-48 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -22,15 +22,16 @@ function SearchBar() {
         </div>
     );
 }
+
 const DATA_URL = "http://localhost:8000/products";
+
 function Main() {
     const { data, setData, searchTerm } = useProductProvider();
-    const [selectedItems, setSelectedItems] = useState(new Set());
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedItems, setSelectedItems] = useState(new Set());
     const [modalData, setModalData] = useState(null);
 
     const fetchData = async () => {
-        // const DATA_URL = "http://localhost:8000/products";
         try {
             const response = await axios.get(DATA_URL);
             setData(response.data);
@@ -89,17 +90,15 @@ function Main() {
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                // setData(data.filter(item => item.id !== id));
-                // Swal.fire('Deleted!', 'Product has been deleted.', 'success');
                 axios.delete(`${DATA_URL}/${id}`)
                     .then(() => {
                         setData(data.filter(item => item.id !== id));
                         Swal.fire('Deleted!', 'Product has been deleted.', 'success');
                     })
                     .catch((error) => {
-                        Swal.fire('Error!', 'There was an error deleting the user.', 'error');
-                        console.error('There was an error deleting the user:', error);
-                    })
+                        Swal.fire('Error!', 'There was an error deleting the product.', 'error');
+                        console.error('There was an error deleting the product:', error);
+                    });
             }
         });
     };
@@ -120,7 +119,6 @@ function Main() {
 
     const handleSave = (newProduct) => {
         if (modalData) {
-            // Edit mode
             setData(prevData =>
                 prevData.map(item =>
                     item.id === modalData.id
@@ -129,12 +127,58 @@ function Main() {
                 )
             );
         } else {
-            // Add mode
             setData([...data, { id: Date.now(), ...newProduct }]);
         }
         setIsModalOpen(false);
     };
 
+    const columns = [
+        {
+            field: 'select',
+            headerName: '',
+            width: 50,
+            renderHeader: () => (
+                <input
+                    type="checkbox"
+                    checked={selectedItems.size === filteredData.length && filteredData.length > 0}
+                    onChange={handleSelectAll}
+                />
+            ),
+            renderCell: (params) => (
+                <input
+                    type="checkbox"
+                    checked={selectedItems.has(params.row.id)}
+                    onChange={() => handleRowCheckboxChange(params.row.id)}
+                />
+            ),
+        },
+        { field: 'id', headerName: 'Product ID', width: 150 },
+        { field: 'product_name', headerName: 'Product Name', width: 200 },
+        { field: 'category', headerName: 'Category', width: 150 },
+        { field: 'price', headerName: 'Price', width: 100 },
+        { field: 'Product_dealer', headerName: 'Product Dealer', width: 200 },
+        {
+            field: 'actions',
+            headerName: 'Actions',
+            width: 150,
+            renderCell: (params) => (
+                <>
+                    <button
+                        className="text-blue-600 hover:text-blue-900 mr-2"
+                        onClick={() => handleEditClick(params.row)}
+                    >
+                        <PencilIcon className="w-5 h-5" />
+                    </button>
+                    <button
+                        className="text-red-600 hover:text-red-900"
+                        onClick={() => deleteProduct(params.row.id)}
+                    >
+                        <TrashIcon className="w-5 h-5" />
+                    </button>
+                </>
+            ),
+        },
+    ];
 
     return (
         <>
@@ -155,7 +199,7 @@ function Main() {
                             Add Product
                         </button>
                         <button
-                            className="flex items-center gap-2 mr-28 text-white bg-red-600 hover:bg-red-700 font-medium rounded-lg text-sm px-5 py-2 "
+                            className="flex items-center gap-2 mr-28 text-white bg-red-600 hover:bg-red-700 font-medium rounded-lg text-sm px-5 py-2"
                             onClick={deleteSelectedProducts}
                             disabled={selectedItems.size === 0}
                         >
@@ -164,69 +208,14 @@ function Main() {
                         </button>
                     </div>
 
-                    <div className="overflow-x-auto relative">
-                        {filteredData.length > 0 ? (
-                            <table className="w-5/6 mr-32 text-sm text-left text-gray-500">
-                                <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-                                    <tr>
-                                        <th scope="col" className="p-4">
-                                            <input
-                                                type="checkbox"
-                                                onChange={handleSelectAll}
-                                                checked={selectedItems.size === filteredData.length}
-                                            />
-                                        </th>
-                                        <th scope="col" className="py-3 px-6">Product ID</th>
-                                        <th scope="col" className="py-3 px-6">Product Name</th>
-                                        <th scope="col" className="py-3 px-6">Category</th>
-                                        <th scope="col" className="py-3 px-6">Price</th>
-                                        <th scope="col" className="py-3 px-6">Product Dealer</th>
-                                        <th scope="col" className="py-3 px-6">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredData.map((product) => (
-                                        <tr key={product.id} className="bg-white border-b">
-                                            <td className="p-4">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedItems.has(product.id)}
-                                                    onChange={() => handleRowCheckboxChange(product.id)}
-                                                />
-                                            </td>
-                                            <td className="py-4 px-6">{product.id}</td>
-                                            <td className="py-4 px-6">
-                                                <Link to={`/product/${product.id}`} state={{ product: product }}>
-                                                    {product.product_name}
-                                                </Link>
-                                            </td>
-                                            <td className="py-4 px-6">{product.category}</td>
-                                            <td className="py-4 px-6">{product.price}</td>
-                                            <td className="py-4 px-6">{product.Product_dealer}</td>
-                                            <td className="py-4 px-6">
-                                                <button
-                                                    className="text-blue-600 hover:text-blue-900 mr-2"
-                                                    onClick={() => handleEditClick(product)}
-                                                >
-                                                    <PencilIcon className="w-5 h-5" />
-                                                </button>
-                                                <button
-                                                    className="text-red-600 hover:text-red-900"
-                                                    onClick={() => deleteProduct(product.id)}
-                                                >
-                                                    <TrashIcon className="w-5 h-5" />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <p className='text-2xl font-semibold text-red-600 my-56'>No Data Found</p>
-                        )}
+                    <div style={{ height: '100%', width: '120%' }}>
+                        <DataGrid
+                            rows={filteredData}
+                            columns={columns}
+                            disableSelectionOnClick
+                            hideFooterPagination
+                        />
                     </div>
-
-
                 </div>
             </div>
 
