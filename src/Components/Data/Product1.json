@@ -15,13 +15,6 @@
       "Product_dealer": "Dell Store"
     },
     {
-      "id": "6",
-      "product_name": "Bose QuietComfort 35 II",
-      "category": "Electronics",
-      "price": "299",
-      "Product_dealer": "Best Buy"
-    },
-    {
       "id": "7",
       "product_name": "HP Spectre x360",
       "category": "Computers",
@@ -209,6 +202,12 @@
       "user_id": "12",
       "user_name": "test1",
       "user_email": "test12@gmail.com"
+    },
+    {
+      "id": "e3f9",
+      "user_id": "21",
+      "user_name": "test",
+      "user_email": "test22@gmail.com"
     }
   ]
 }

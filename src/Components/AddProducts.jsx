@@ -1,5 +1,6 @@
 import Navbar from './Header/Navbar';
 import { DataGrid } from '@mui/x-data-grid';
+import Counter from './Counter';
 
 function AddProducts() {
   const rows = [
@@ -25,6 +26,12 @@ function AddProducts() {
       <Navbar />
       <h2 className='text-3xl font-serif ml-40 py-3'>Welcome to add product page </h2>
       <DataGrid rows={rows} columns={columns} style={{marginLeft:"200px"}}/>
+      <Counter>
+      <Counter.Label>Test the Context Hook</Counter.Label>
+      <Counter.Decrease icon="-"/>
+      <Counter.Count/>
+      <Counter.Increase icon="+"/>
+      </Counter>
     </div>
   )
 }
