@@ -12,7 +12,7 @@ function Users() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState(null);
 
-    const USER_URL = "http://localhost:8000/users";
+    const USER_URL = import.meta.env.VITE_API_USERS;
 
     const fetchUserData = async () => {
         try {

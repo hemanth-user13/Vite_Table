@@ -23,7 +23,16 @@ function SearchBar() {
     );
 }
 
-const DATA_URL = "http://localhost:8000/products";
+// const DATA_URL1 = import.meta.env.PRODUCTS_URL;
+// console.log(DATA_URL1)
+// const apiKey = import.meta.env.VITE_API_KEY;
+// const apiUrl = import.meta.env.VITE_API_PRODUCTS;
+
+// console.log("API Key:", apiKey);
+// console.log("API URL:", apiUrl);
+// console.log("the env data is",import.meta.env.VITE_SOME_KEY)
+// const DATA_URL="http://localhost:8000/products"
+const DATA_URL=import.meta.env.VITE_API_PRODUCTS
 
 function Main() {
     const { data, setData, searchTerm } = useProductProvider();
