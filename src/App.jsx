@@ -6,6 +6,7 @@ import ProductPage from './Components/Product'
 import { ProductProvider } from './Components/ProductSlice';
 import UserPage from './Components/Users';
 import AddProducts from './Components/AddProducts';
+import Bank from './Components/Bank/BankDataPage'
 import PageNotFound from './Components/Error/Error';
 
 
@@ -21,6 +22,7 @@ function App() {
             <Route path='/product/:id' element={<ProductPage />} />
             <Route path='/users' element={<UserPage />} />
             <Route path='/addproducts' element={<AddProducts/>}/>
+            <Route path='/bankdata' element={<Bank/>}/>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </ProductProvider>

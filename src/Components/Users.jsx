@@ -6,6 +6,7 @@ import { TrashIcon, PlusIcon } from '@heroicons/react/24/solid';
 import UserModal from './modal/UsersModal';
 import Swal from 'sweetalert2';
 import { DataGrid } from '@mui/x-data-grid';
+import ReactSearchBox from "react-search-box";
 
 function Users() {
     const { userData, setUserData } = useProductProvider();
@@ -26,7 +27,7 @@ function Users() {
 
     useEffect(() => {
         fetchUserData();
-    }, [setUserData]);
+    }, [USER_URL]); // or [] if you do not expect the URL to change
 
     const handleSave = (newUserData) => {
         if (modalData) {
@@ -61,7 +62,6 @@ function Users() {
                     Swal.fire('Error!', 'There was an error deleting the user.', 'error');
                     console.error('There was an error deleting the user:', error);
                 });
-            
             }
         })
     }
@@ -89,7 +89,15 @@ function Users() {
         <div>
             <Navbar />
             <h2 className='text-3xl font-serif ml-48 my-3'>User List</h2>
+            
             <div className='flex justify-end items-end my-5'>
+            <ReactSearchBox
+                placeholder="Search"
+                
+                value={""}
+                data={userData.map(user => ({ key: user.user_id, value: user.user_name }))}
+                callback={(record) => console.log(record)}
+            />
                 <button
                     className='flex items-end ml-96 gap-2 text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2'
                     onClick={() => {
@@ -102,12 +110,13 @@ function Users() {
                 </button>
             </div>
             {userData.length > 0 ? (
-                <div style={{ height: 400, width: '80%', marginLeft: 'auto', marginRight: 'auto' }}>
+                <div style={{ height: 400, width: '80%', marginLeft: '250px', marginRight: 'auto' }}>
                     <DataGrid
                         rows={userData}
                         columns={columns}
                         disableSelectionOnClick
                         hideFooterPagination
+                        getRowId={(row) => row.user_id}
                     />
                 </div>
             ) : (
